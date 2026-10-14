@@ -22,20 +22,20 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           mkdir -p feed
-          url=$(jq -r '.updates.feedURL' tinyjs.json)
-          status=$(curl -sSL -o feed/appcast.xml -w '%{http_code}' "$url")
-          if [ "$status" = 404 ]; then
-            # A rename changes the Pages URL. Restore the latest published feed
-            # instead of losing its release history at the new address.
-            tag=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName // empty')
-            if [ -n "$tag" ]; then
-              gh release download "$tag" --pattern appcast.xml --dir feed --clobber
-            else
+          # Published release assets are authoritative; the live Pages feed may
+          # be stale after a deployment or repository rename.
+          tag=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName // empty')
+          if [ -n "$tag" ]; then
+            gh release download "$tag" --pattern appcast.xml --dir feed --clobber
+          else
+            url=$(jq -r '.updates.feedURL' tinyjs.json)
+            status=$(curl -sSL -o feed/appcast.xml -w '%{http_code}' "$url")
+            if [ "$status" = 404 ]; then
               cp updates/appcast.xml feed/appcast.xml
+            elif [ "$status" != 200 ]; then
+              echo "Could not read existing feed ($status); refusing to replace it." >&2
+              exit 1
             fi
-          elif [ "$status" != 200 ]; then
-            echo "Could not read existing feed ($status); refusing to replace it." >&2
-            exit 1
           fi
       - uses: actions/upload-pages-artifact@v3
         with:
