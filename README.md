@@ -5,6 +5,8 @@
 Download the `.zip` under **Assets**, unzip it, and drag **Discourse Chat App.app**
 into **Applications**. Open it from there to get started.
 
+---
+
 A macOS webview app for one Discourse chat site at a time.
 
 See the [Windows and Linux E2E CI plan](docs/cross-platform-e2e-ci-plan.md)
