@@ -105,10 +105,19 @@ The native smoke test uses an isolated app identity to verify framework loading,
 menu actions, the saved automatic-check toggle, and the dev-launcher guard. It
 never installs an update or changes the real app's update preferences.
 
-Before the first public release, also test a complete update from an older
-updater-enabled build to a newer notarized build using an isolated test feed.
-Confirm relaunch, session retention, and rejection of a tampered archive. A
-successful build or smoke test alone does not exercise installation/relaunch.
+For a real download/install/relaunch test using isolated apps and a loopback feed:
+
+```sh
+TINYJS_SIGN_IDENTITY='Developer ID Application: YOUR NAME (M4XMDAF939)' \
+NOTARY_PROFILE=discourse-chat-release python3 scripts/test-updater-install.py
+```
+
+This test signs and notarizes two fixture apps with a unique bundle ID, updates
+the older one through Sparkle, and verifies its replacement, relaunch, preference
+retention, and persistent WebKit cookie. The fixture initializes a webview and
+allows the seeded cookie to reach disk before updating. It does not access real
+site sessions or publish test builds. Results are saved under `.build/updater-install/`.
+A successful build or smoke test alone does not exercise installation/relaunch.
 
 References: [Sparkle setup](https://sparkle-project.org/documentation/),
 [publishing updates](https://sparkle-project.org/documentation/publishing/).
