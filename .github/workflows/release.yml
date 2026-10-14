@@ -2,6 +2,7 @@ name: Release macOS app
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -67,6 +68,7 @@ jobs:
           security delete-keychain "$RUNNER_TEMP/release.keychain-db" || true
           rm -f "$RUNNER_TEMP/certificate.p12"
   publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-latest
     permissions:

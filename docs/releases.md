@@ -61,6 +61,9 @@ Keychain and removes it after the build.
 
 ## Publish a release
 
+Run **Release macOS app** manually on main to validate credentials and produce
+a notarized artifact without publishing. Only a pushed version tag publishes.
+
 1. Set a strictly newer version in `tinyjs.json`, commit it, and push main.
 2. Tag that commit with the matching version, e.g. `v0.2.6`, and push the tag.
 3. The **Release macOS app** workflow runs tests, builds, checks the Developer ID

@@ -9,7 +9,7 @@ if [[ "$(uname -m)" != arm64 ]]; then
   exit 1
 fi
 version=$(node -p 'JSON.parse(require("fs").readFileSync("tinyjs.json")).version')
-if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" != "v$version" ]]; then
+if [[ "${GITHUB_REF_TYPE:-}" == tag && "${GITHUB_REF_NAME}" != "v$version" ]]; then
   echo "Tag must match tinyjs.json: v$version" >&2
   exit 1
 fi
