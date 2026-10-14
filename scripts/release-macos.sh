@@ -42,8 +42,8 @@ ditto -c -k --sequesterRsrc --keepParent "$app" "$release_dir/$archive"
 feed_url=$(node -p 'JSON.parse(require("fs").readFileSync("tinyjs.json")).updates.feedURL')
 curl --fail --location --retry 3 "$feed_url" -o "$release_dir/appcast.xml"
 appcast_args=(--maximum-deltas 0 --maximum-versions 0
-  --download-url-prefix "https://github.com/pmusaraj/discourse-chat-wrapper/releases/download/v$version/"
-  --link 'https://github.com/pmusaraj/discourse-chat-wrapper'
+  --download-url-prefix "https://github.com/pmusaraj/discourse-chat-app-wrapper/releases/download/v$version/"
+  --link 'https://github.com/pmusaraj/discourse-chat-app-wrapper'
   "$release_dir")
 if [[ -n "${SPARKLE_PRIVATE_KEY:-}" ]]; then
   printf '%s' "$SPARKLE_PRIVATE_KEY" | .runtime/sparkle/2.10.0/bin/generate_appcast --ed-key-file - "${appcast_args[@]}"

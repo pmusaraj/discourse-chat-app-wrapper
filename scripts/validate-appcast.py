@@ -15,7 +15,7 @@ def validate(feed, version, archive):
         raise ValueError("Feed must contain exactly one entry for the release version")
     item = matches[0]
     enclosure = item.find("enclosure")
-    expected = f"https://github.com/pmusaraj/discourse-chat-wrapper/releases/download/v{version}/{archive.name}"
+    expected = f"https://github.com/pmusaraj/discourse-chat-app-wrapper/releases/download/v{version}/{archive.name}"
     if enclosure is None or enclosure.get("url") != expected:
         raise ValueError("Update download does not match this GitHub release")
     if len(base64.b64decode(enclosure.get(sparkle + "edSignature", ""), validate=True)) != 64:

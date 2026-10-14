@@ -17,12 +17,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Preserve an existing feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           mkdir -p feed
-          url=https://pmusaraj.github.io/discourse-chat-wrapper/appcast.xml
+          url=$(jq -r '.updates.feedURL' tinyjs.json)
           status=$(curl -sSL -o feed/appcast.xml -w '%{http_code}' "$url")
           if [ "$status" = 404 ]; then
-            cp updates/appcast.xml feed/appcast.xml
+            # A rename changes the Pages URL. Restore the latest published feed
+            # instead of losing its release history at the new address.
+            tag=$(gh release list --exclude-drafts --exclude-pre-releases --limit 1 --json tagName --jq '.[0].tagName // empty')
+            if [ -n "$tag" ]; then
+              gh release download "$tag" --pattern appcast.xml --dir feed --clobber
+            else
+              cp updates/appcast.xml feed/appcast.xml
+            fi
           elif [ "$status" != 200 ]; then
             echo "Could not read existing feed ($status); refusing to replace it." >&2
             exit 1

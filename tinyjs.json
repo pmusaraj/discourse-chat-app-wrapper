@@ -2,9 +2,9 @@
   "name": "Discourse Chat App",
   "title": "Discourse Chat App",
   "id": "org.discourse.dev.chat.tinyjs.poc",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "updates": {
-    "feedURL": "https://pmusaraj.github.io/discourse-chat-wrapper/appcast.xml",
+    "feedURL": "https://pmusaraj.github.io/discourse-chat-app-wrapper/appcast.xml",
     "publicKey": "5OjdJmZaMhkkX8LjDCfgw4pKrcfT1whEboxO8NiI3Uo=",
     "keychainAccount": "org.discourse.dev.chat.tinyjs.poc"
   },

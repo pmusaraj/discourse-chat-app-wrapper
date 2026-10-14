@@ -1,6 +1,6 @@
 # Discourse Chat App
 
-**[Download the latest release](https://github.com/pmusaraj/discourse-chat-wrapper/releases/latest)** — requires macOS 15+ and Apple Silicon.
+**[Download the latest release](https://github.com/pmusaraj/discourse-chat-app-wrapper/releases/latest)** — requires macOS 15+ and Apple Silicon.
 
 Download the `.zip` under **Assets**, unzip it, and drag **Discourse Chat App.app**
 into **Applications**. Open it from there to get started.
@@ -41,7 +41,8 @@ signing. Local builds are not notarized for distribution. The bundle identifier 
 Packaged apps include **Check for Updates…** and **Automatically Check for Updates**
 in the application menu. See [macOS updates and releases](docs/releases.md) for
 Developer ID signing, notarization, GitHub release secrets, and the update feed.
-Versions before 0.2.6 need one manual upgrade to gain the updater.
+Versions through 0.2.6 need a manual upgrade to 0.2.7 or later: the repository
+rename changed the update-feed address.
 
 ## Home and sessions
 

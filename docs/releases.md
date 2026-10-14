@@ -6,14 +6,14 @@ asks for automatic-check consent and remembers the user's preference. The dev
 launcher (`npm start`) never loads the updater. Updates replace the app bundle;
 site preferences and WebKit session storage remain outside it.
 
-Users of 0.2.5 and earlier must manually install the first updater-enabled
-release. Releases currently support Apple Silicon on macOS 15 or later.
+Users of 0.2.6 and earlier must manually install 0.2.7 or later because the
+repository rename changed the update-feed address. Releases currently support Apple Silicon on macOS 15 or later.
 
 ## Signing and hosting
 
 - Apple team: **M4XMDAF939** (personal account).
-- Feed: https://pmusaraj.github.io/discourse-chat-wrapper/appcast.xml
-- Downloads: https://github.com/pmusaraj/discourse-chat-wrapper/releases
+- Feed: https://pmusaraj.github.io/discourse-chat-app-wrapper/appcast.xml
+- Downloads: https://github.com/pmusaraj/discourse-chat-app-wrapper/releases
 - Sparkle public key and feed URL: `tinyjs.json` under `updates`.
 - Sparkle private key: macOS login Keychain, service **Private key for signing
   Sparkle updates**, account **org.discourse.dev.chat.tinyjs.poc**.
@@ -51,7 +51,7 @@ key_dir=$(mktemp -d)
 chmod 700 "$key_dir"
 .runtime/sparkle/2.10.0/bin/generate_keys \
   --account org.discourse.dev.chat.tinyjs.poc -x "$key_dir/sparkle.key"
-gh secret set SPARKLE_PRIVATE_KEY --repo pmusaraj/discourse-chat-wrapper < "$key_dir/sparkle.key"
+gh secret set SPARKLE_PRIVATE_KEY --repo pmusaraj/discourse-chat-app-wrapper < "$key_dir/sparkle.key"
 rm -rf "$key_dir"
 ```
 
@@ -65,7 +65,7 @@ Run **Release macOS app** manually on main to validate credentials and produce
 a notarized artifact without publishing. Only a pushed version tag publishes.
 
 1. Set a strictly newer version in `tinyjs.json`, commit it, and push main.
-2. Tag that commit with the matching version, e.g. `v0.2.6`, and push the tag.
+2. Tag that commit with the matching version, e.g. `v0.2.7`, and push the tag.
 3. The **Release macOS app** workflow runs tests, builds, checks the Developer ID
    identity and team, notarizes, staples, and creates a signed ZIP and appcast.
 4. It verifies the archive signature against the public key shipped in the app,

@@ -47,7 +47,7 @@ class UpdateChecks(unittest.TestCase):
               <sparkle:version>0.2.6</sparkle:version>
               <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
               <sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
-              <enclosure url="https://github.com/pmusaraj/discourse-chat-wrapper/releases/download/v0.2.6/{archive.name}"
+              <enclosure url="https://github.com/pmusaraj/discourse-chat-app-wrapper/releases/download/v0.2.6/{archive.name}"
                 sparkle:edSignature="{signature}" length="7" />
               </item></channel></rss>'''
             feed.write_text(valid)
