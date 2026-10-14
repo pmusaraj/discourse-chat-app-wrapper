@@ -2,7 +2,12 @@
   "name": "Discourse Chat App",
   "title": "Discourse Chat App",
   "id": "org.discourse.dev.chat.tinyjs.poc",
-  "version": "0.2.5",
+  "version": "0.2.6",
+  "updates": {
+    "feedURL": "https://pmusaraj.github.io/discourse-chat-wrapper/appcast.xml",
+    "publicKey": "5OjdJmZaMhkkX8LjDCfgw4pKrcfT1whEboxO8NiI3Uo=",
+    "keychainAccount": "org.discourse.dev.chat.tinyjs.poc"
+  },
   "minTinyjsVersion": "0.42.3",
   "size": "1100x780",
   "inject": "src/inject.js",

@@ -28,9 +28,14 @@ network access. No global runtime installation is changed. The launcher patch
 adds backend-only Home navigation and session-cookie operations; neither is
 exposed to remote pages. This local launcher build omits TinyJS's optional AI shim.
 
-Builds use an available Apple Development signing identity, otherwise ad-hoc
-signing. They are not notarized for distribution. The bundle identifier remains
+Local builds use an available Apple Development signing identity, otherwise ad-hoc
+signing. Local builds are not notarized for distribution. The bundle identifier remains
 `org.discourse.dev.chat.tinyjs.poc`, preserving existing WebKit session storage.
+
+Packaged apps include **Check for Updates…** and **Automatically Check for Updates**
+in the application menu. See [macOS updates and releases](docs/releases.md) for
+Developer ID signing, notarization, GitHub release secrets, and the update feed.
+Versions before 0.2.6 need one manual upgrade to gain the updater.
 
 ## Home and sessions
 

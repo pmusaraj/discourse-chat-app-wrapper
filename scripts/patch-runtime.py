@@ -19,6 +19,15 @@ text = text.replace(anchor, '''      } else if (line == "CHATHOME") {
         webview_dispatch(g_w, do_chat_session, new ChatSessionArgs{
           line.substr(12, sp - 12), p.size() > 0 ? p[0] : "", p.size() > 1 ? p[1] : "", p.size() > 2 ? p[2] : "check"});
 ''' + anchor)
+anchor = 'static void build_bar(MacBar &mb) {'
+assert text.count(anchor) == 1
+text = text.replace(anchor, '#include "chat-updater.inc"\n\n' + anchor)
+anchor = '    // `MENUROLE app` + ITEMs:'
+assert text.count(anchor) == 1
+text = text.replace(anchor, '    chat_add_update_menu(appMenu);\n\n' + anchor)
+anchor = '  // Default menu bar (About/Quit + Edit); custom menus replace it via MENUEND.'
+assert text.count(anchor) == 1
+text = text.replace(anchor, '  chat_start_updater();\n\n' + anchor)
 source.write_text(text)
 bridge = Path('.runtime/runtime/bridge.js')
 text = bridge.read_text()

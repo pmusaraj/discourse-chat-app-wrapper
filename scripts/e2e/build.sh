@@ -19,7 +19,7 @@ s = s.replace(needle, needle + '''
 p.write_text(s)
 PY
 c++ -std=c++17 -x objective-c++ -mmacosx-version-min=14.0 -arch "$(uname -m)" \
-  -isystem .e2e/native/include .e2e/native/launcher-macos.cc -o .e2e/launcher \
+  -F .runtime/sparkle/2.10.0 -isystem .e2e/native/include .e2e/native/launcher-macos.cc -o .e2e/launcher \
   -framework WebKit -framework AppKit -framework Carbon -framework UserNotifications \
   -framework AVFoundation -framework ServiceManagement -framework IOKit -framework Quartz \
   -framework Vision -framework QuickLookThumbnailing -framework Security \

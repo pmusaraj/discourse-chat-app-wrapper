@@ -1,0 +1,107 @@
+name: Release macOS app
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+concurrency:
+  group: macos-release
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate release credentials
+        env:
+          CERTIFICATE: ${{ secrets.DEVELOPER_ID_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          for name in CERTIFICATE CERTIFICATE_PASSWORD APPLE_ID APPLE_APP_PASSWORD SPARKLE_PRIVATE_KEY; do
+            if [ -z "${!name}" ]; then echo "Missing release secret: $name" >&2; exit 1; fi
+          done
+          test "$(uname -m)" = arm64
+      - name: Import signing credentials into a temporary Keychain
+        env:
+          CERTIFICATE: ${{ secrets.DEVELOPER_ID_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.DEVELOPER_ID_P12_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          keychain="$RUNNER_TEMP/release.keychain-db"
+          password=$(openssl rand -hex 32)
+          echo "::add-mask::$password"
+          python3 -c 'import os,base64,pathlib; pathlib.Path(os.environ["RUNNER_TEMP"],"certificate.p12").write_bytes(base64.b64decode(os.environ["CERTIFICATE"]))'
+          security create-keychain -p "$password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$password" "$keychain"
+          security import "$RUNNER_TEMP/certificate.p12" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychain"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$password" "$keychain"
+          security list-keychains -d user -s "$keychain" login.keychain-db
+          identity=$(security find-identity -v -p codesigning "$keychain" | awk '/"Developer ID Application:.*\(M4XMDAF939\)"/ {print $2; exit}')
+          test -n "$identity"
+          echo "TINYJS_SIGN_IDENTITY=$identity" >> "$GITHUB_ENV"
+          echo "NOTARY_PROFILE=discourse-chat-release" >> "$GITHUB_ENV"
+          echo "NOTARY_KEYCHAIN=$keychain" >> "$GITHUB_ENV"
+          xcrun notarytool store-credentials discourse-chat-release --keychain "$keychain" --apple-id "$APPLE_ID" --team-id M4XMDAF939 --password "$APPLE_APP_PASSWORD"
+          rm "$RUNNER_TEMP/certificate.p12"
+      - run: npm run setup
+      - name: Build, notarize, and sign the update
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: npm run release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-release
+          path: dist/release/
+          if-no-files-found: error
+      - name: Remove signing credentials
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/release.keychain-db" || true
+          rm -f "$RUNNER_TEMP/certificate.p12"
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: macos-release
+          path: release
+      - name: Publish versioned download before advertising it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            # Permit retrying a failed Pages deployment, never replacing assets.
+            mkdir existing
+            gh release download "$GITHUB_REF_NAME" --dir existing
+            for asset in release/*.zip release/SHA256SUMS release/appcast.xml; do
+              cmp "$asset" "existing/$(basename "$asset")"
+            done
+          else
+            gh release create "$GITHUB_REF_NAME" release/*.zip release/SHA256SUMS release/appcast.xml --verify-tag --generate-notes
+          fi
+      - name: Prepare update feed
+        run: |
+          mkdir -p feed
+          cp release/appcast.xml feed/appcast.xml
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: feed
+      - uses: actions/deploy-pages@v4
+        id: deployment

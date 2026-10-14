@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 cd "$(dirname "$0")/.."
+if [ "$#" -ne 0 ]; then
+  echo "This build script produces the host-architecture .app; use npm run release for the signed update archive." >&2
+  exit 1
+fi
 
 # Prefer a development signature for local Notification Center support.
 # An explicit identity always wins; do not commit personal signing identities.
@@ -14,4 +18,5 @@ if [ -z "${TINYJS_SIGN_IDENTITY:-}" ]; then
   fi
 fi
 sh scripts/build-runtime.sh
-exec ./.runtime/tinyjs build "$@"
+./.runtime/tinyjs build
+python3 scripts/embed-updater.py
