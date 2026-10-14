@@ -2,7 +2,7 @@
   "name": "Discourse Chat App",
   "title": "Discourse Chat App",
   "id": "org.discourse.dev.chat.tinyjs.poc",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "minTinyjsVersion": "0.42.3",
   "size": "1100x780",
   "inject": "src/inject.js",
