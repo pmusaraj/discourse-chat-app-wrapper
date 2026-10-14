@@ -151,7 +151,14 @@
       --dev-chat-toolbar-height: 48px;
       --dev-chat-divider: color-mix(in srgb, var(--primary) 12%, transparent);
     }
+    /* Chat panes own scrolling; the surrounding document fits the webview. */
+    html[data-dev-chat-poc],
     html[data-dev-chat-poc] body {
+      height: 100dvh;
+      overflow: clip;
+    }
+    html[data-dev-chat-poc] body {
+      margin: 0 !important;
       padding-top: 0 !important;
       background: var(--secondary, Canvas) !important;
     }
@@ -197,6 +204,7 @@
     html[data-dev-chat-poc] #main-outlet-wrapper {
       --main-grid-gap: 0px;
       gap: 0 !important;
+      margin: 0 !important;
       padding: 0 !important;
       max-width: none !important;
     }
@@ -207,6 +215,8 @@
     }
     html[data-dev-chat-poc] .main-chat-outlet {
       border-radius: 0 !important;
+      box-sizing: border-box;
+      min-height: 0;
       height: 100dvh;
       display: flex;
       flex-direction: column;
