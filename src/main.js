@@ -73,6 +73,19 @@ function savedSite(address) {
   return next;
 }
 
+async function selectSite(address, app) {
+  const next = savedSite(address);
+  if (maintenance) throw new Error("Wait for the Dev action to finish.");
+  const revision = ++siteRevision;
+  browserAuth.cancel();
+  const result = await sessionRequest(app, next.origin);
+  if (revision !== siteRevision) return false;
+  if (result.status !== "active") throw new Error(result.status === "expired"
+    ? "This session has expired. Authenticate to continue."
+    : "Couldn’t reach this site. Check your connection and retry.");
+  return openChat(next, app, revision);
+}
+
 export const api = {
   async startup(_payload, _app, caller) {
     assertLocal(caller);
@@ -108,16 +121,7 @@ export const api = {
   async selectSite({ address }, app, caller) {
     assertLocal(caller);
     await initialized;
-    const next = savedSite(address);
-    if (maintenance) throw new Error("Wait for the Dev action to finish.");
-    const revision = ++siteRevision;
-    browserAuth.cancel();
-    const result = await sessionRequest(app, next.origin);
-    if (revision !== siteRevision) return false;
-    if (result.status !== "active") throw new Error(result.status === "expired"
-      ? "This session has expired. Authenticate to continue."
-      : "Couldn’t reach this site. Check your connection and retry.");
-    return openChat(next, app, revision);
+    return selectSite(address, app);
   },
   async browserLogin({ address }, app, caller) {
     assertLocal(caller);
@@ -217,7 +221,13 @@ export async function init(app) {
 }
 function renderMenu(app) {
   app.setMenu([{ role: "edit" }, { title: "Chat", items: [
-    { id: "home", label: "Home", key: "1" },
+    { id: "home", label: "Home", key: "h" },
+    ...rememberedSites.map((entry, index) => ({
+      id: `site:${entry.origin}`, label: entry.name,
+      ...(index < 9 ? { key: String(index + 1) } : {}),
+      checked: entry.origin === site?.origin, enabled: !maintenance && !logoutPending,
+    })),
+    { separator: true },
     { id: "reload", label: "Reload", key: "r" },
     { separator: true },
     { id: "browser", label: "Open Chat in Browser", enabled: !!site },
@@ -233,6 +243,22 @@ function renderMenu(app) {
   ] }]);
 }
 export async function onMenu(id, app) {
+  if (id.startsWith("site:")) {
+    await initialized;
+    if (maintenance || logoutPending) return;
+    const address = id.slice(5);
+    if (!rememberedSites.some((entry) => entry.origin === address) || site?.origin === address) return;
+    const selecting = selectSite(address, app);
+    const revision = siteRevision;
+    try { await selecting; }
+    catch (error) {
+      if (revision === siteRevision) {
+        home(app, error.message || "Couldn’t open this site. Please retry.");
+        lastAddress = address;
+      }
+    }
+    return;
+  }
   if (id === "notifications") {
     notifications.setEnabled(!notifications.enabled);
     await app.store.set("desktopNotifications", notifications.enabled);

@@ -23,7 +23,7 @@
     overlay.hidden = false;
     element("home-content").inert = true;
     element("title-bar").inert = true;
-    if (starting) element("loading-title").focus();
+    if (starting) overlay.focus();
   }
   function hideLoading() {
     clearTimeout(openingTimer);
@@ -57,7 +57,7 @@
     const index = controls.indexOf(document.activeElement);
     const next = event.shiftKey ? (index <= 0 ? controls.length - 1 : index - 1) : (index + 1) % controls.length;
     event.preventDefault();
-    (controls[next] || element("loading-title")).focus();
+    (controls[next] || element("loading-overlay")).focus();
   });
   async function refreshSessions(sites) {
     const version = ++sessionVersion;

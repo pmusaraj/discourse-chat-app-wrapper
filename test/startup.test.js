@@ -7,7 +7,7 @@ function picker(site = null, hash = "") {
   const elements = {};
   const timers = [];
   const destinations = [];
-  const element = (id) => elements[id] ??= { value: "", hidden: true, textContent: "", focus() {},
+  const element = (id) => elements[id] ??= { value: "", hidden: true, textContent: "", focus() { context.document.activeElement = this; },
     addEventListener(name, callback) { this[name] = callback; },
     classList: { toggle() {} },
     children: [], append(...nodes) { this.children.push(...nodes); }, replaceChildren() { this.children = []; } };
@@ -158,7 +158,9 @@ test("opening a saved site keeps the loading overlay until navigation, and failu
   const state = picker({ origin: "https://community.test", name: "community.test" });
   await state.timers[0].callback();
   const button = state.elements["session-list"].children[0].children[1];
+  button.focus();
   await button.click();
+  assert.equal(state.context.document.activeElement, state.elements["loading-overlay"]);
   assert.equal(state.elements["loading-overlay"].hidden, false);
   assert.equal(state.elements["loading-title"].textContent, "Loading this site’s chat interface");
   assert.equal(state.elements["home-content"].inert, true);
@@ -166,6 +168,7 @@ test("opening a saved site keeps the loading overlay until navigation, and failu
   assert.equal(state.elements["loading-overlay"].hidden, true);
   assert.equal(state.elements["home-content"].inert, false);
   assert.equal(button.disabled, false);
+  assert.equal(state.context.document.activeElement, button);
 });
 
 test("browser approval overlay remains interactive and cancellation restores the picker", async () => {

@@ -52,7 +52,8 @@ saved site keeps this form collapsed; approval controls appear separately.
 Your sites starts expanded when saved sites exist.
 There is no secondary picker window or Sites menu.
 
-Use **Chat > Home** (Cmd+1) to return to the intro screen without logging out.
+Use **Chat > Home** (Cmd+H) to return to the intro screen without logging out.
+The **Chat** menu lists saved sites by name; Cmd+1 through Cmd+9 switch to the first nine sites.
 **Chat > Desktop Notifications** toggles the saved notification preference.
 Authentication errors appear in the webview. **Chat > Log Out** ends the selected WebKit session,
 retains the saved site for reauthentication, and returns Home. Failed logout preserves the session

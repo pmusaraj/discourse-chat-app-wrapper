@@ -159,3 +159,48 @@ test("Dev notification test works from Home after a five-second delay", async (t
   assert.equal(sent.length, 1);
   assert.equal(sent[0].title, "Discourse Chat App");
 });
+
+
+test("Chat menu lists saved sites with shortcuts and switches the active session", async () => {
+  const app = mockApp();
+  await init(app);
+  const items = () => app.menu.find((entry) => entry.title === "Chat").items;
+  assert.equal(items().find((entry) => entry.id === "home").key, "h");
+  assert.deepEqual(items().filter((entry) => entry.id?.startsWith("site:")).map(({ label, key }) => ({ label, key })), [
+    { label: "community.test", key: "1" }, { label: "second.test", key: "2" },
+  ]);
+  await onMenu(`site:${caller.origin}`, app);
+  assert.equal((await api.siteContext({}, app, caller)).origin, caller.origin);
+  await onMenu("site:https://second.test", app);
+  assert.equal(app.values.get("activeSite"), "https://second.test");
+  assert.equal(items().find((entry) => entry.id === "site:https://second.test").checked, true);
+  assert.equal(items().find((entry) => entry.id === `site:${caller.origin}`).checked, false);
+  assert.match(app.scripts.at(-1), /https:\/\/second.test\/chat\//);
+  await assert.rejects(api.siteContext({}, app, caller));
+});
+
+test("menu switching reports expired sessions on Home", async () => {
+  const app = mockApp();
+  await init(app);
+  await onMenu(`site:${caller.origin}`, app);
+  app.status = "expired";
+  await onMenu("site:https://second.test", app);
+  assert.equal(app.homeCount, 1);
+  const state = await api.startup({}, app, local);
+  assert.match(state.message, /expired/);
+  assert.equal(state.address, "https://second.test");
+});
+
+test("a failed menu switch cannot override a later Home action", async () => {
+  const app = mockApp();
+  await init(app);
+  let reject;
+  app.chatSession = () => new Promise((resolve, fail) => { reject = fail; });
+  const selecting = onMenu("site:https://second.test", app);
+  await new Promise(setImmediate);
+  await onMenu("home", app);
+  reject(new Error("Unavailable"));
+  await selecting;
+  assert.equal(app.homeCount, 1);
+  assert.equal((await api.startup({}, app, local)).message, "");
+});
