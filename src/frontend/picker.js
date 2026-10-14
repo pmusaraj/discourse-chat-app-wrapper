@@ -7,6 +7,7 @@
   let sessionVersion = 0;
   let lastFocus;
   let openingTimer;
+  let communityURL = "";
   const sessionButtons = [];
   function setBusy(value) {
     busy = value;
@@ -14,12 +15,13 @@
     element("address").disabled = value;
     for (const button of sessionButtons) button.disabled = value || !button.ready;
   }
-  function showLoading(activity, detail = "") {
+  function showLoading(activity, detail = "", isCommunity = false) {
     const overlay = element("loading-overlay");
     const starting = overlay.hidden;
     if (starting) lastFocus = document.activeElement;
     element("loading-title").textContent = activity;
-    element("loading-detail").textContent = detail;
+    element("loading-detail").textContent = isCommunity ? detail.replace(/^https?:\/\//, "") : detail;
+    element("loading-detail").classList.toggle("community-url", isCommunity);
     overlay.hidden = false;
     element("home-content").inert = true;
     element("title-bar").inert = true;
@@ -42,7 +44,7 @@
     element("cancel-login").hidden = true;
     element("status").textContent = "Opening chat…";
     setBusy(true);
-    showLoading("Loading this site’s chat interface");
+    showLoading("Loading this site’s chat interface", communityURL, true);
     clearTimeout(openingTimer);
     openingTimer = setTimeout(() => resetBrowserLogin("Chat is taking longer than usual. Please retry."), 30000);
   }
@@ -117,7 +119,8 @@
           return startBrowserLogin(site.origin);
         }
         setBusy(true);
-        showLoading("Loading this site’s chat interface", site.name);
+        communityURL = site.origin;
+        showLoading("Loading this site’s chat interface", communityURL, true);
         element("status").textContent = `Opening ${site.name}…`;
         try {
           const selected = await tiny.api.call("selectSite", { address: site.origin });
@@ -166,6 +169,7 @@
     try {
       const result = await tiny.api.call("browserLogin", { address });
       if (version !== loginVersion) return;
+      communityURL = result.origin;
       element("device-login").hidden = result.mode !== "device";
       element("paste-login").hidden = result.mode !== "paste";
       element("device-code").textContent = result.code || "";

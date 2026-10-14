@@ -88,6 +88,7 @@
           background:color-mix(in srgb, var(--background) 58%, transparent); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); color:var(--text); font:16px -apple-system,system-ui,sans-serif; }
         h1 { font-size:24px; font-weight:600; letter-spacing:-.4px; margin:24px 0 12px; }
         p { color:var(--muted); max-width:400px; line-height:1.55; margin:12px 0; }
+        .community-url { font-size:14px; font-weight:700; margin:0 0 12px; overflow-wrap:anywhere; }
         button { font:inherit; padding:10px 16px; margin:4px; border:1px solid #8885; border-radius:10px; background:var(--background); color:var(--text); cursor:pointer; }
         .pulse { width:24px; height:24px; border-radius:50%; background:var(--accent); animation:waiting-pulse 1.6s ease-in-out infinite; }
         @keyframes waiting-pulse { 0%,100% { transform:scale(.85); opacity:.65; box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 22%, transparent); } 50% { transform:scale(1); opacity:1; box-shadow:0 0 0 14px transparent; } }
@@ -96,12 +97,14 @@
         @media (prefers-reduced-motion:reduce) { :host { transition:none; } .pulse { animation:none; } }
       </style>
       <section role="status" aria-live="polite"><span class="pulse" aria-hidden="true"></span><h1>Loading this site’s chat interface</h1>
-        <p></p>
+        <p class="community-url"></p>
+        <p class="loading-message"></p>
         <div hidden><button id="retry">Retry</button><button id="home">Home</button></div>
       </section>`;
+    root.querySelector(".community-url").textContent = location.host;
     document.documentElement.append(host);
     const slow = setTimeout(() => {
-      root.querySelector("p").textContent = "This is taking longer than usual. You can keep waiting or retry.";
+      root.querySelector(".loading-message").textContent = "This is taking longer than usual. You can keep waiting or retry.";
       root.querySelector("div").hidden = false;
     }, 12000);
     let dismissed = false;
@@ -118,7 +121,7 @@
       clearTimeout(slow);
       root.querySelector("h1").textContent = "Couldn’t open chat";
       root.querySelector(".pulse").hidden = true;
-      root.querySelector("p").textContent = "Couldn’t load chat. Check your connection and try again.";
+      root.querySelector(".loading-message").textContent = "Couldn’t load chat. Check your connection and try again.";
       root.querySelector("div").hidden = false;
     };
     return dismiss;

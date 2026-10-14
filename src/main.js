@@ -142,7 +142,7 @@ export const api = {
       if (revision === siteRevision) browserAuth.cancel();
       throw new Error("Couldn’t open your browser. Please retry.");
     }
-    return { name: attempt.site.name, mode: attempt.mode, code: attempt.code, interval: attempt.interval, expiresIn: attempt.expiresIn };
+    return { name: attempt.site.name, origin: attempt.site.origin, mode: attempt.mode, code: attempt.code, interval: attempt.interval, expiresIn: attempt.expiresIn };
   },
   async pollBrowserLogin(_payload, app, caller) {
     assertLocal(caller);
