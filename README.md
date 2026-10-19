@@ -13,7 +13,7 @@ into **Applications**. Open it from there to get started.
 
 Home with saved sites and their session status:
 
-![Discourse Chat App main screen](assets/main-screen.png)
+![Discourse Chat App main screen](assets/main-screen-updated.png)
 
 Chat on meta.discourse.org:
 
