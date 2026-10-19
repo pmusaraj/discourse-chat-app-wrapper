@@ -17,7 +17,7 @@ Home with saved sites and their session status:
 
 Chat on meta.discourse.org:
 
-![Discourse Meta chat in the macOS app](assets/meta-chat.png)
+![Discourse Meta chat in the macOS app](assets/meta-chat-updated.png)
 
 See the [Windows and Linux E2E CI plan](docs/cross-platform-e2e-ci-plan.md)
 for the proposed native test coverage, runner setup, and implementation order.
