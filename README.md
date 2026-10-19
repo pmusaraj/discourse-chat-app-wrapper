@@ -9,6 +9,16 @@ into **Applications**. Open it from there to get started.
 
 A macOS webview app for one Discourse chat site at a time.
 
+## Screenshots
+
+Home with saved sites and their session status:
+
+![Discourse Chat App main screen](assets/main-screen.png)
+
+Chat on meta.discourse.org:
+
+![Discourse Meta chat in the macOS app](assets/meta-chat.png)
+
 See the [Windows and Linux E2E CI plan](docs/cross-platform-e2e-ci-plan.md)
 for the proposed native test coverage, runner setup, and implementation order.
 
