@@ -1,13 +1,13 @@
 # Discourse Chat App
 
+A macOS webview app for one Discourse chat site at a time.
+
 **[Download the latest release](https://github.com/pmusaraj/discourse-chat-app-wrapper/releases/latest)** — requires macOS 15+ and Apple Silicon.
 
 Download the `.zip` under **Assets**, unzip it, and drag **Discourse Chat App.app**
 into **Applications**. Open it from there to get started.
 
 ---
-
-A macOS webview app for one Discourse chat site at a time.
 
 ## Screenshots
 
