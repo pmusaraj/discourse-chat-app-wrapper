@@ -39,8 +39,9 @@ open "dist/Discourse Chat App.app"
 The runtime is pinned to TinyJS v0.42.3. Setup/build apply a small, reproducible
 macOS patch from `native/chat-session.inc` using `scripts/build-runtime.sh`.
 The first run downloads the pinned source archive, verifies its checksum, and
-compiles the launcher. This requires Xcode Command Line Tools, Python 3, and
-network access. No global runtime installation is changed. The launcher patch
+compiles the launcher. This requires Xcode (including `actool` for the app-icon
+asset catalog), Python 3, and network access. No global runtime installation is
+changed. The launcher patch
 adds backend-only Home navigation and session-cookie operations; neither is
 exposed to remote pages. This local launcher build omits TinyJS's optional AI shim.
 
@@ -168,6 +169,8 @@ Manual acceptance:
 The icon in `assets/discourse-chat.svg` adapts the
 [Discourse logo](https://www.discourse.org/a/img/logo-icon.svg) with typing dots
 and a macOS icon tile. `assets/discourse-chat.png` is the build input.
+Packaged builds compile it into an app-icon asset catalog and an `.icns` fallback
+before signing, so macOS system surfaces can resolve the app's icon by name.
 
 ## Live end-to-end test (do1)
 

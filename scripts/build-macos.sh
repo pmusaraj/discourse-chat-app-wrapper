@@ -19,4 +19,5 @@ if [ -z "${TINYJS_SIGN_IDENTITY:-}" ]; then
 fi
 sh scripts/build-runtime.sh
 ./.runtime/tinyjs build
+python3 scripts/build-icon.py
 python3 scripts/embed-updater.py
