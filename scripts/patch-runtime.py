@@ -25,6 +25,18 @@ text = text.replace(anchor, '#include "chat-updater.inc"\n\n' + anchor)
 anchor = '    // `MENUROLE app` + ITEMs:'
 assert text.count(anchor) == 1
 text = text.replace(anchor, '    chat_add_update_menu(appMenu);\n\n' + anchor)
+anchor = '    NSMenuItem *quit ='
+assert text.count(anchor) == 1
+text = text.replace(anchor, '''    NSMenuItem *hide =
+        [[NSMenuItem alloc] initWithTitle:ns("Hide " + g_app_name)
+                                   action:@selector(hide:)
+                            keyEquivalent:@"h"];
+    hide.target = NSApp;
+    hide.keyEquivalentModifierMask = NSEventModifierFlagCommand;
+    [appMenu addItem:hide];
+    [appMenu addItem:[NSMenuItem separatorItem]];
+
+''' + anchor)
 anchor = '  // Default menu bar (About/Quit + Edit); custom menus replace it via MENUEND.'
 assert text.count(anchor) == 1
 text = text.replace(anchor, '  chat_start_updater();\n\n' + anchor)
