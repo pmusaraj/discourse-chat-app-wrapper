@@ -165,7 +165,7 @@ test("Chat menu lists saved sites with shortcuts and switches the active session
   const app = mockApp();
   await init(app);
   const items = () => app.menu.find((entry) => entry.title === "Chat").items;
-  assert.equal(items().find((entry) => entry.id === "home").key, "h");
+  assert.equal(items().find((entry) => entry.id === "home").key, "0");
   assert.deepEqual(items().filter((entry) => entry.id?.startsWith("site:")).map(({ label, key }) => ({ label, key })), [
     { label: "community.test", key: "1" }, { label: "second.test", key: "2" },
   ]);

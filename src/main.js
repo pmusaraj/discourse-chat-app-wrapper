@@ -221,7 +221,7 @@ export async function init(app) {
 }
 function renderMenu(app) {
   app.setMenu([{ role: "edit" }, { title: "Chat", items: [
-    { id: "home", label: "Home", key: "h" },
+    { id: "home", label: "Home", key: "0" },
     ...rememberedSites.map((entry, index) => ({
       id: `site:${entry.origin}`, label: entry.name,
       ...(index < 9 ? { key: String(index + 1) } : {}),
