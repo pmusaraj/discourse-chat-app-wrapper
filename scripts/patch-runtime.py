@@ -3,6 +3,9 @@ import sys
 
 source = Path(sys.argv[1])
 text = source.read_text()
+anchor = 'static void tiny_apply_web_delegates(WKWebView *wv) {'
+assert text.count(anchor) == 1
+text = text.replace(anchor, '#include "chat-webview.inc"\n\n' + anchor + '\n  chat_configure_webview(wv);')
 anchor = '// --- on-device AI: FoundationModels'
 assert text.count(anchor) == 1
 text = text.replace(anchor, '#include "chat-session.inc"\n\n' + anchor)

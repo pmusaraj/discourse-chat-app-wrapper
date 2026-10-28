@@ -142,6 +142,9 @@ site or initiate authentication.
 ## Chat and validation
 
 The injected layout removes the site header and forum sidebar on chat routes.
+The native webview disables WebKit's Live Text overlay on videos and screen
+shares, while preserving normal chat text selection. This uses WebKit's internal
+feature API when available and may need updating with future macOS versions.
 Forum topics, profiles, and external links open in the default browser. The chat
 notification listener uses Discourse's current-user and MessageBus services;
 notifications are scoped to the selected site and suppressed while focused.
