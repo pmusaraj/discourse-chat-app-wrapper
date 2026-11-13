@@ -235,6 +235,8 @@ function renderMenu(app) {
     { separator: true },
     { id: "notifications", label: "Desktop Notifications", checked: notifications.enabled },
   ] }, { title: "Dev", items: [
+    { id: "dev-toggle-mini-profiler", label: "Toggle Mini Profiler", enabled: !!site && !maintenance && !logoutPending },
+    { separator: true },
     { id: "dev-remove-all", label: "Remove All Sessions and Sites", enabled: !maintenance && !logoutPending },
     { id: "dev-logout-all", label: "Log Out All Sites", enabled: !!rememberedSites.length && !maintenance && !logoutPending },
     { id: "dev-logout-current", label: "Log Out Current Site", enabled: !!site && !maintenance && !logoutPending },
@@ -264,6 +266,14 @@ export async function onMenu(id, app) {
     await app.store.set("desktopNotifications", notifications.enabled);
     renderMenu(app);
     if (notifications.enabled) await app.permissions.request("notifications");
+  }
+  if (id === "dev-toggle-mini-profiler" && site && !maintenance && !logoutPending) {
+    app.eval(`(() => {
+      const url = new URL(location.href);
+      if (url.origin !== ${JSON.stringify(site.origin)}) return;
+      url.searchParams.set("pp", url.searchParams.get("pp") === "enable" ? "disable" : "enable");
+      location.assign(url.href);
+    })()`);
   }
   if (id === "dev-test-notification") {
     await app.permissions.request("notifications");

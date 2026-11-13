@@ -197,8 +197,7 @@
       background: transparent;
       border: 0;
     }
-    html[data-dev-chat-poc] .d-header,
-    html[data-dev-chat-poc] .profiler-results {
+    html[data-dev-chat-poc] .d-header {
       display: none !important;
     }
     html[data-dev-chat-poc] #main-outlet-wrapper {

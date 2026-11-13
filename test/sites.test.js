@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import vm from "node:vm";
 import { normalizeSite } from "../src/sites.js";
 import { api, init, onMenu, onNavigate } from "../src/main.js";
 const local = { origin: "file://", window: "main" };
@@ -83,6 +84,39 @@ test("desktop notifications live in the menu and persist when toggled", async ()
   assert.equal(app.values.get("desktopNotifications"), false);
   const item = app.menu.find((entry) => entry.title === "Chat").items.find((entry) => entry.id === "notifications");
   assert.equal(item.checked, false);
+});
+
+test("Dev Mini Profiler toggles the current URL and is disabled on Home", async () => {
+  const app = mockApp();
+  const item = () => app.menu.find((entry) => entry.title === "Dev").items.find((entry) => entry.id === "dev-toggle-mini-profiler");
+  await init(app);
+  assert.equal(item().enabled, false);
+  await onMenu("dev-toggle-mini-profiler", app);
+  assert.equal(app.scripts.length, 0);
+
+  await api.selectSite({ address: caller.origin }, app, local);
+  assert.equal(item().enabled, true);
+  await onMenu("dev-toggle-mini-profiler", app);
+  const script = app.scripts.at(-1);
+  for (const [query, expected] of [["", "enable"], ["&pp=enable", "disable"], ["&pp=disable", "enable"]]) {
+    let destination;
+    vm.runInNewContext(script, { URL, location: {
+      href: `${caller.origin}/chat/c/general/42?other=value${query}#latest`,
+      assign(url) { destination = new URL(url); },
+    } });
+    assert.equal(destination.origin, caller.origin);
+    assert.equal(destination.pathname, "/chat/c/general/42");
+    assert.equal(destination.searchParams.get("other"), "value");
+    assert.equal(destination.searchParams.get("pp"), expected);
+    assert.equal(destination.hash, "#latest");
+    assert.equal(onNavigate({ kind: "policy", url: destination.href }, app), undefined);
+  }
+  vm.runInNewContext(script, { URL, location: {
+    href: "file:///app/index.html",
+    assign() { assert.fail("Must not navigate a different origin"); },
+  } });
+  await onMenu("home", app);
+  assert.equal(item().enabled, false);
 });
 
 test("Dev remove-all clears native website data and prevents saved sites returning", async () => {
